@@ -3,10 +3,11 @@
 function saveGame() {
     const gameState = {
         coins: coins,
-        collection: collection
+        collection: collection,
+        storePlayers: storePlayers,
+        storeDate: storeDate
     };
     localStorage.setItem('footballCardGame', JSON.stringify(gameState));
-    console.log('Game saved!');
 }
 
 // Load game state from localStorage
@@ -17,7 +18,8 @@ function loadGame() {
             const gameState = JSON.parse(saved);
             coins = gameState.coins || 1000;
             collection = gameState.collection || [];
-            console.log('Game loaded!');
+            storePlayers = gameState.storePlayers || [];
+            storeDate = gameState.storeDate || "";
             return true;
         } catch (e) {
             console.error('Error loading save:', e);
@@ -33,6 +35,8 @@ function resetGame() {
         localStorage.removeItem('footballCardGame');
         coins = 1000;
         collection = [];
+        storePlayers = [];
+        storeDate = "";
         updateCoins();
         displayCollection();
         alert('Game reset! Starting fresh with 1000 coins.');
@@ -43,13 +47,11 @@ function resetGame() {
 // Game state
 let coins = 1000;
 let collection = [];
+let storePlayers = [];
+let storeDate = "";
 
 // Load saved game on startup
-if (!loadGame()) {
-    // No save found, start with defaults
-    coins = 1000;
-    collection = [];
-}
+loadGame();
 
 // Initialize display
 updateCoins();
@@ -60,7 +62,7 @@ displayCollection();
 // Coins display
 function updateCoins() {
     document.getElementById("coins").innerText = coins;
-    saveGame(); // Auto-save when coins change
+    saveGame();
 }
 
 // Card rarity
@@ -105,22 +107,67 @@ function sellCard(index) {
     alert(`Sold ${card.name} for ${sellPrice} coins!`);
     updateCoins();
     displayCollection();
-    saveGame(); // Auto-save when collection changes
+    saveGame();
 }
 
-// Store
+// === DAILY GLOBAL STORE (same for everyone, refresh at midnight) ===
+
+// Deterministic seeded RNG
+function seededRandom(seed) {
+    let x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+}
+
+// Generate store based on today's date
+function generateDailyStore() {
+    storePlayers = [];
+
+    const today = new Date();
+    const seed = parseInt(
+        today.getFullYear().toString() +
+        (today.getMonth() + 1).toString().padStart(2, "0") +
+        today.getDate().toString().padStart(2, "0")
+    );
+
+    for (let i = 0; i < 16; i++) {
+        const r = seededRandom(seed + i);
+        const index = Math.floor(r * players.length);
+        storePlayers.push(players[index]);
+    }
+
+    storeDate = seed;
+    saveGame();
+}
+
+// Check if store needs refreshing
+function checkDailyStore() {
+    const today = new Date();
+    const todaySeed = parseInt(
+        today.getFullYear().toString() +
+        (today.getMonth() + 1).toString().padStart(2, "0") +
+        today.getDate().toString().padStart(2, "0")
+    );
+
+    if (storeDate !== todaySeed) {
+        generateDailyStore();
+    }
+}
+
+// Store UI
 function toggleStore() {
     const storeDiv = document.getElementById("store-container");
     if (storeDiv.style.display === "none") {
         storeDiv.style.display = "block";
         displayStore();
-    } else storeDiv.style.display = "none";
+    } else {
+        storeDiv.style.display = "none";
+    }
 }
 
 function displayStore() {
     const storeDiv = document.getElementById("store");
     storeDiv.innerHTML = "";
-    players.forEach((p, index) => {
+    storePlayers.forEach((p, index) => {
         const card = document.createElement("div");
         card.className = "card";
         card.innerHTML = `
@@ -140,18 +187,24 @@ function displayStore() {
 }
 
 function buyCard(index) {
-    const p = players[index];
+    const p = storePlayers[index];
     if (coins >= p.price) {
         coins -= p.price;
         collection.push(p);
         alert(`Bought ${p.name}!`);
         updateCoins();
         displayCollection();
-        saveGame(); // Auto-save when collection changes
-    } else alert("Not enough coins!");
+        saveGame();
+    } else {
+        alert("Not enough coins!");
+    }
 }
 
-// Pack opening
+// Run daily store check on startup
+checkDailyStore();
+
+// === PACK OPENING ===
+
 function openPack() {
     if (coins < 200) {
         alert("Not enough coins!");
@@ -187,10 +240,10 @@ function openPack() {
         }, 500 + index * 400);
     });
     setTimeout(() => {
-    packContainer.innerHTML = "";  // Clears all cards
-    displayCollection();
-    saveGame();
-}, 2000);
+        packContainer.innerHTML = "";
+        displayCollection();
+        saveGame();
+    }, 2000);
 }
 
 // === PART 2: MINI-GAME ===
@@ -284,8 +337,39 @@ function endMiniGame(won) {
         alert("Touchdown! +200 coins");
     } else alert("Tackle! Try again.");
     updateCoins();
-    saveGame(); // Auto-save after mini-game
+    saveGame();
+}
+function updateStoreTimer() {
+    const now = new Date();
+
+    // Next midnight
+    const nextMidnight = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate() + 1,
+        0, 0, 0, 0
+    );
+
+    let diff = Math.floor((nextMidnight - now) / 1000); // seconds left
+
+    const hours = Math.floor(diff / 3600);
+    diff %= 3600;
+
+    const minutes = Math.floor(diff / 60);
+    const seconds = diff % 60;
+
+    const formatted =
+        hours.toString().padStart(2, "0") + ":" +
+        minutes.toString().padStart(2, "0") + ":" +
+        seconds.toString().padStart(2, "0");
+
+    document.getElementById("store-timer").innerText =
+        "Next refresh in: " + formatted;
 }
 
-// Auto-save every 30 seconds as a backup
+
+// Auto-save every 10 seconds
 setInterval(saveGame, 10000);
+setInterval(updateStoreTimer, 1000);
+updateStoreTimer();
+
