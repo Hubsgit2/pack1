@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Card Collector</title>
+    <link rel="stylesheet" href="card.css">
+</head>
+<body>
+    <div class="header">
+        <h1>Football Card Collector</h1>
+        <div class="coins-display">
+            Coins: <span id="coins">0</span>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button onclick="openPack()">Open Pack (200 coins)</button>
+        <button onclick="toggleStore()">Store</button>
+        <button onclick="startMiniGame()">Play Mini-Game</button>
+        <button onclick="resetGame()" style="background-color: #dc3545;">Reset Game</button>
+    </div>
+
+    <div id="pack-container" class="pack-container"></div>
+
+    <canvas id="mini-game" width="600" height="300"></canvas>
+
+    <div id="store-container" class="store-container" style="display:none;">
+        <h2>Store</h2>
+        <div id="store" class="collection"></div>
+    </div>
+
+    <div class="collection-section">
+        <h2>My Collection</h2>
+        <div id="collection" class="collection"></div>
+    </div>
+
+    <script src="pd.js"></script>
+    <script src="save.js"></script>
+</body>
+</html>
