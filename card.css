@@ -1,0 +1,245 @@
+ *{
+    margin:0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial;
+    background: linear-gradient(to left, #c8102e, #0b3d91); /* reversed colors */
+    color: white;
+    text-align: center;
+}
+
+.header {
+    text-align: center;
+    color: white;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.coins-display {
+    font-size: 1.5rem;
+    background: rgba(255,255,255,0.2);
+    padding: 10px 20px;
+    border-radius: 10px;
+    display: inline-block;
+    backdrop-filter: blur(10px);
+}
+
+.controls {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.controls button {
+  
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+#mini-game {
+    border: 3px solid white;
+    border-radius: 10px;
+    background: darkgreen;
+    margin-top: -300px;   /* Lower number = higher position */
+}
+
+.controls button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.controls button:active {
+    transform: translateY(0);
+}
+
+.pack-container {
+    position: relative;
+    height: 250px;
+    margin: 20px auto;
+    max-width: 800px;
+}
+
+.pack-card {
+    width: 150px;
+    height: 220px;
+    border-radius: 12px;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    right:225px;
+    transform-style: preserve-3d;
+    transform: rotateY(180deg);
+    backface-visibility: hidden;
+    transition: transform 0.6s ease, top 0.5s ease, left 0.5s ease;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.7);
+    margin-top: 310px;   /* Lower number = higher position */
+     margin-left: 80px;  /* Increase this to move more right */
+}
+.pack-card.front {
+    background: linear-gradient(to bottom, #0b3d91, #c8102e);
+}
+
+.pack-card.revealed {
+    transform: rotateY(0deg) scale(1.2);
+    z-index: 10;
+    box-shadow: 0 0 20px gold;
+}
+
+
+.store-container {
+    background: rgba(0,0,0,0.8);
+    padding: 10px;
+    border-radius: 12px;
+    margin-top: 20px;
+}
+
+.store-container h2 {
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.collection-section {
+    background: linear-gradient(to left, #c8102e, #0b3d91); /* reversed colors */
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 1200px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    margin-top: 300px;   /* Lower number = higher position */
+}
+
+.collection-section h2 {
+    color: #ffffff;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+
+.collection {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    padding: 10px;
+}
+
+.card {
+    width: 200px;
+    height: 280px;
+    margin: 12px;
+    border-radius: 12px;
+    overflow: hidden;
+     background: linear-gradient(to bottom, #0b3d91, #c8102e);
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+    position: relative;
+    text-align: center;
+    border: 4px solid gold;
+}
+
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.rarity-label {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: gold;
+    color: black;
+    padding: 3px 7px;
+    font-weight: bold;
+    font-size: 14px;
+    border-radius: 5px;
+    box-shadow: 0 0 6px gold;
+}
+.player-photo {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-bottom: 2px solid #333;
+}
+
+.team-logo {
+    width: 40px;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+.rating {
+    margin-top: -5px;
+}
+.team {
+    margin-top: -5px;   /* Negative moves it UP */
+}
+
+.card-content {
+    text-align: center;
+}
+
+.card-content h3, .card-content h4 {
+    color: #ffffff;
+    margin-bottom: 5px;
+    font-size: 1rem;
+}
+
+.card-content p {
+    color: #ffffff;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+}
+
+.card-content button {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.3s;
+}
+
+.card-content button:hover {
+    background: #c0392b;
+}
+
+#store .card-content button {
+    background: #27ae60;
+        margin-top: -50px;   /* Lower number = higher position */
+}
+
+#store .card-content button:hover {
+    background: #229954;
+}
+
+@media (max-width: 768px) {
+    .collection {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .controls button {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+}

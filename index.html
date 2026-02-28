@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NFL Card Game</title>
+    <link rel="stylesheet" href="style3 (1).css">
+</head>
+<body>
+    <h1>🏈 NFL Ultimate Card Game</h1>
+
+    <div class="stats">
+        <p>Coins: <span id="coins">500</span></p>
+        <button onclick="startMiniGame()">Play Mini Game</button>
+        <button onclick="openPack()">Open Pack (200 Coins)</button>
+        <button onclick="toggleStore()">Store</button>
+    </div>
+
+    <div id="game-area">
+        <canvas id="mini-game" width="600" height="300"></canvas>
+    </div>
+
+    <div id="pack-container" class="pack-container"></div>
+
+    <div id="store-container" class="store-container" style="display:none;">
+        <h2>Marketplace</h2>
+        <div id="store" class="store"></div>
+    </div>
+ <div class="collection-section"></div>
+    <h2>Your Collection</h2>
+    <div id="collection" class="collection"></div>
+
+    <script src="script (2).js"></script>
+</body>
+</html>
