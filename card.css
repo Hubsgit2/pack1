@@ -10,17 +10,36 @@ body {
     color: white;
     text-align: center;
 }
-
-.header {
-    text-align: center;
-    color: white;
-    margin-bottom: 20px;
-}
 /* Hide mobile controls on devices that do NOT support touch */
 @media (hover: hover) and (pointer: fine) {
     #mobile-controls {
         display: none !important;
     }
+}
+.hidden {
+    display: none;
+}
+
+#return-btn {
+    color: rgb(0, 0, 0);
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+#return-btn {
+    position: absolute;
+    bottom: 20px;   /* distance from bottom */
+    left: 20px;     /* distance from left */
+}
+.header {
+    text-align: center;
+    color: white;
+    margin-bottom: 20px;
 }
 
 .header h1 {
