@@ -1,4 +1,3 @@
-
 // === AUTO-SAVE SYSTEM ===
 // Save game state to localStorage
 function saveGame() {
@@ -17,7 +16,7 @@ function loadGame() {
     if (saved) {
         try {
             const gameState = JSON.parse(saved);
-            coins = gameState.coins || 1000;
+            coins = gameState.coins ?? 1000;
             collection = gameState.collection || [];
             storePlayers = gameState.storePlayers || [];
             storeDate = gameState.storeDate || "";
@@ -425,3 +424,4 @@ function updateStoreTimer() {
 setInterval(saveGame, 10000);
 setInterval(updateStoreTimer, 1000);
 updateStoreTimer();
+
