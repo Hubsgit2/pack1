@@ -7,12 +7,14 @@
     <link rel="stylesheet" href="card.css">
 </head>
 <body>
+    
     <div class="header">
         <h1>Football Card Collector</h1>
         <div class="coins-display">
             Coins: <span id="coins">0</span>
         </div>
     </div>
+    
 
     <div class="controls">
         <button onclick="openPack()">Open Pack (200 coins)</button>
@@ -24,8 +26,8 @@
     <div id="pack-container" class="pack-container"></div>
 
     <canvas id="mini-game" width="600" height="300"></canvas>
-
-    <div id="store-container" class="store-container" style="display:none;">
+<div id="main-ui">
+      <div id="store-container" class="store-container" style="display:none;">
         <h2>Store</h2>
 <p id="store-timer" style="text-align:center; color:white; font-size:20px; margin-top:10px;">
     Next refresh in: --
@@ -37,14 +39,16 @@
         <h2>My Collection</h2>
         <div id="collection" class="collection"></div>
     </div>
-<div id="mobile-controls">
+</div>
+
+</div>
+<div id="mobile-controls" class="hidden">
     <button class="ctrl" id="btn-up">▲</button>
     <div class="row">
         <button class="ctrl" id="btn-left">◀</button>
         <button class="ctrl" id="btn-down">▼</button>
         <button class="ctrl" id="btn-right">▶</button>
     </div>
-</div>
 
     <script src="pd.js"></script>
     <script src="save.js"></script>
