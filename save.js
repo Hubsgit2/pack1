@@ -185,15 +185,46 @@ function displayStore() {
         storeDiv.appendChild(card);
     });
 }
+function bindTouch(btnId, keyName) {
+    const btn = document.getElementById(btnId);
+
+    btn.addEventListener("touchstart", e => {
+        e.preventDefault();
+        keys[keyName] = true;
+    });
+
+    btn.addEventListener("touchend", e => {
+        e.preventDefault();
+        keys[keyName] = false;
+    });
+
+    btn.addEventListener("touchcancel", e => {
+        e.preventDefault();
+        keys[keyName] = false;
+    });
+}
+
+bindTouch("btn-up", "ArrowUp");
+bindTouch("btn-down", "ArrowDown");
+bindTouch("btn-left", "ArrowLeft");
+bindTouch("btn-right", "ArrowRight");
+
 
 function buyCard(index) {
     const p = storePlayers[index];
+
     if (coins >= p.price) {
         coins -= p.price;
         collection.push(p);
+
+        // 🔥 Remove card from shop
+        storePlayers.splice(index, 1);
+
         alert(`Bought ${p.name}!`);
+
         updateCoins();
         displayCollection();
+        displayStore();   // Refresh store UI
         saveGame();
     } else {
         alert("Not enough coins!");
