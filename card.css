@@ -100,14 +100,17 @@ body {
 
 
 .store-container {
-    background: rgba(0,0,0,0.8);
-    padding: 10px;
-    border-radius: 12px;
-    margin-top: 20px;
+       background: linear-gradient(to left, #c8102e, #0b3d91); /* reversed colors */
+    border-radius: 15px;
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 1400px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    margin-top: 0px;   /* Lower number = higher position */
 }
 
 .store-container h2 {
-    color: #ffffff;
+    color: #f1e9e9;
     margin-bottom: 20px;
     text-align: center;
 }
@@ -119,7 +122,7 @@ body {
     margin: 20px auto;
     max-width: 1200px;
     box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-    margin-top: 300px;   /* Lower number = higher position */
+    margin-top: 0px;   /* Lower number = higher position */
 }
 
 .collection-section h2 {
@@ -127,6 +130,32 @@ body {
     margin-bottom: 20px;
     text-align: center;
 }
+#mobile-controls {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#mobile-controls .row {
+    display: flex;
+    gap: 10px;
+}
+
+.ctrl {
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
+    border-radius: 10px;
+    border: none;
+    background: #333;
+    color: white;
+}
+
 
 
 .collection {
