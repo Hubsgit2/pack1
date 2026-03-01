@@ -163,6 +163,27 @@ function toggleStore() {
         storeDiv.style.display = "none";
     }
 }
+function getCardPrice(player) {
+    const rarity = cardRarity(player);
+
+    switch (rarity) {
+        case "Ultimate":
+            return 5000 + player.rating * 50;
+
+        case "Legendary":
+            return 3000 + player.rating * 40;
+
+        case "Elite":
+            return 1500 + player.rating * 30;
+
+        case "Rare":
+            return 600 + player.rating * 20;
+
+        case "Common":
+        default:
+            return 200 + player.rating * 10;
+    }
+}
 
 function displayStore() {
     const storeDiv = document.getElementById("store");
@@ -178,8 +199,8 @@ function displayStore() {
                 <h3>${p.name}</h3>
                 <p>${p.team}</p>
                 <p>⭐ ${p.rating}</p>
-                <p>Price: ${p.price} coins</p>
-                <button onclick="buyCard(${index})">Buy</button>
+<p>Price: ${getCardPrice(p)} coins</p>                
+<button onclick="buyCard(${index})">Buy</button>
             </div>
         `;
         storeDiv.appendChild(card);
@@ -213,7 +234,10 @@ bindTouch("btn-right", "ArrowRight");
 function buyCard(index) {
     const p = storePlayers[index];
 
-    if (coins >= p.price) {
+   const price = getCardPrice(p);
+
+if (coins >= price) {
+    coins -= price;
         coins -= p.price;
         collection.push(p);
 
