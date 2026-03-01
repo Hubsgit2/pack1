@@ -294,13 +294,19 @@ document.addEventListener('keyup', e => keys[e.key] = false);
 
 function startMiniGame() {
     if (gameRunning) return;
+
+    document.getElementById("main-ui").classList.add("hidden");
+    document.getElementById("mobile-controls").classList.remove("hidden");
+
     gameRunning = true;
     playerObj.x = 280;
     playerObj.y = 250;
     defender.x = Math.random() * 500;
     defender.y = 50;
+
     requestAnimationFrame(gameLoop);
 }
+
 
 function draw3DRect(obj, color) {
     const scale = 1 + (canvas.height - obj.y) / 1000;
