@@ -366,15 +366,30 @@ function gameLoop() {
 
     requestAnimationFrame(gameLoop);
 }
+function returnToMenu() {
+    document.getElementById("main-ui").classList.remove("hidden");
+    document.getElementById("mobile-controls").classList.add("hidden");
+    document.getElementById("return-btn").classList.add("hidden");
+
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
 
 function endMiniGame(won) {
     gameRunning = false;
+
     if (won) {
         coins += 200;
         alert("Touchdown! +200 coins");
-    } else alert("Tackle! Try again.");
+    } else {
+        alert("Tackle! Try again.");
+    }
+
     updateCoins();
     saveGame();
+
+    // 🔥 Show return button
+    document.getElementById("return-btn").classList.remove("hidden");
 }
 function updateStoreTimer() {
     const now = new Date();
