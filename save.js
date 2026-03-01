@@ -1,31 +1,26 @@
+
 // === AUTO-SAVE SYSTEM ===
 // Save game state to localStorage
-// Load saved game first
-loadGame();
-
-// Now initialize UI with saved data
-updateCoins();
-displayCollection();
-checkDailyStore();
 function saveGame() {
     const gameState = {
-        coins,
-        collection,
-        storePlayers,
-        storeDate
+        coins: coins,
+        collection: collection,
+        storePlayers: storePlayers,
+        storeDate: storeDate
     };
-    localStorage.setItem(SAVE_KEY, JSON.stringify(gameState));
+    localStorage.setItem('footballCardGame', JSON.stringify(gameState));
 }
 
+// Load game state from localStorage
 function loadGame() {
-    const saved = localStorage.getItem(SAVE_KEY);
+    const saved = localStorage.getItem('footballCardGame');
     if (saved) {
         try {
             const gameState = JSON.parse(saved);
-            coins = gameState.coins ?? 1000;
-            collection = gameState.collection ?? [];
-            storePlayers = gameState.storePlayers ?? [];
-            storeDate = gameState.storeDate ?? "";
+            coins = gameState.coins || 1000;
+            collection = gameState.collection || [];
+            storePlayers = gameState.storePlayers || [];
+            storeDate = gameState.storeDate || "";
             return true;
         } catch (e) {
             console.error('Error loading save:', e);
@@ -430,4 +425,3 @@ function updateStoreTimer() {
 setInterval(saveGame, 10000);
 setInterval(updateStoreTimer, 1000);
 updateStoreTimer();
-
