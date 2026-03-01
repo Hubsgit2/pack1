@@ -102,7 +102,7 @@ function displayCollection() {
 
 function sellCard(index) {
     const card = collection.splice(index, 1)[0];
-    const sellPrice = Math.floor(card.price / 2);
+    const sellPrice = Math.floor(card.price / 3);
     coins += sellPrice;
     alert(`Sold ${card.name} for ${sellPrice} coins!`);
     updateCoins();
