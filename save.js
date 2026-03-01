@@ -255,7 +255,7 @@ function openPack() {
         const cardEl = document.createElement("div");
         cardEl.className = "pack-card front";
         cardEl.style.top = "0px";
-        cardEl.style.left = `${225 + index * 20}px`;
+        cardEl.style.left = `${30 + index * 100}px`;
         cardEl.innerHTML = `
             <img class="player-photo" src="${card.img}" />
             <img class="team-logo" src="${card.logo}" />
@@ -274,7 +274,7 @@ function openPack() {
         packContainer.innerHTML = "";
         displayCollection();
         saveGame();
-    }, 2000);
+    }, 5000);
 }
 
 // === PART 2: MINI-GAME ===
