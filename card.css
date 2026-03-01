@@ -16,6 +16,12 @@ body {
     color: white;
     margin-bottom: 20px;
 }
+/* Hide mobile controls on devices that do NOT support touch */
+@media (hover: hover) and (pointer: fine) {
+    #mobile-controls {
+        display: none !important;
+    }
+}
 
 .header h1 {
     font-size: 2.5rem;
