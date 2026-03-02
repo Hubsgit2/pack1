@@ -130,11 +130,17 @@ function generateDailyStore() {
         today.getDate().toString().padStart(2, "0")
     );
 
-    for (let i = 0; i < 16; i++) {
-        const r = seededRandom(seed + i);
-        const index = Math.floor(r * players.length);
-        storePlayers.push(players[index]);
+    // Copy players array so we don't modify original
+    const shuffledPlayers = [...players];
+
+    // Deterministic shuffle based on seed
+    for (let i = shuffledPlayers.length - 1; i > 0; i--) {
+        const j = Math.floor(seededRandom(seed + i) * (i + 1));
+        [shuffledPlayers[i], shuffledPlayers[j]] = [shuffledPlayers[j], shuffledPlayers[i]];
     }
+
+    // Take first 16 unique players
+    storePlayers = shuffledPlayers.slice(0, 16);
 
     storeDate = seed;
     saveGame();
