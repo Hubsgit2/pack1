@@ -112,7 +112,8 @@ function sellCard(index) {
 
 // === DAILY GLOBAL STORE (same for everyone, refresh at midnight) ===
 
-// Deterministic seeded RNG
+
+/ Deterministic seeded RNG
 function seededRandom(seed) {
     let x = Math.sin(seed) * 10000;
     return x - Math.floor(x);
@@ -161,27 +162,6 @@ function toggleStore() {
         displayStore();
     } else {
         storeDiv.style.display = "none";
-    }
-}
-function getCardPrice(player) {
-    const rarity = cardRarity(player);
-
-    switch (rarity) {
-        case "Ultimate":
-            return 5000 + player.rating * 50;
-
-        case "Legendary":
-            return 3000 + player.rating * 40;
-
-        case "Elite":
-            return 1500 + player.rating * 30;
-
-        case "Rare":
-            return 600 + player.rating * 20;
-
-        case "Common":
-        default:
-            return 200 + player.rating * 10;
     }
 }
 
@@ -234,10 +214,7 @@ bindTouch("btn-right", "ArrowRight");
 function buyCard(index) {
     const p = storePlayers[index];
 
-   const price = getCardPrice(p);
-
-if (coins >= price) {
-    coins -= price;
+    if (coins >= p.price) {
         coins -= p.price;
         collection.push(p);
 
@@ -257,6 +234,50 @@ if (coins >= price) {
 
 // Run daily store check on startup
 checkDailyStore();
+
+// === PACK OPENING ===
+
+function openPack() {
+    if (coins < 200) {
+        alert("Not enough coins!");
+        return;
+    }
+    coins -= 200;
+    updateCoins();
+    const packContainer = document.getElementById("pack-container");
+    packContainer.innerHTML = "";
+    const packCards = [];
+    for (let i = 0; i < 5; i++) {
+        const card = players[Math.floor(Math.random() * players.length)];
+        packCards.push(card);
+        collection.push(card);
+    }
+    packCards.forEach((card, index) => {
+        const cardEl = document.createElement("div");
+        cardEl.className = "pack-card front";
+        cardEl.style.top = "0px";
+        cardEl.style.left = `${30 + index * 100}px`;
+        cardEl.innerHTML = `
+            <img class="player-photo" src="${card.img}" />
+            <img class="team-logo" src="${card.logo}" />
+            <div class="card-content">
+                <h4>${card.name}</h4>
+                <p class="team">${card.team}</p>
+                <p class="rating">⭐ ${card.rating}</p>
+            </div>
+        `;
+        packContainer.appendChild(cardEl);
+        setTimeout(() => {
+            cardEl.classList.add("revealed");
+        }, 500 + index * 400);
+    });
+    setTimeout(() => {
+        packContainer.innerHTML = "";
+        displayCollection();
+        saveGame();
+    }, 5000);
+}
+
 
 // === PACK OPENING ===
 
