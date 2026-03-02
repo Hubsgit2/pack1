@@ -1,4 +1,3 @@
-    
 // === AUTO-SAVE SYSTEM ===
 // Save game state to localStorage
 function saveGame() {
@@ -111,7 +110,7 @@ function sellCard(index) {
     saveGame();
 }
 
-// === DAILY GLOBAL STORE (same for everyone, refresh at midnight) ===
+// === DAILY GLOBAL STORE (same for everyone, refresh every 10s) ===
 
 // Deterministic seeded RNG
 function seededRandom(seed) {
@@ -119,27 +118,23 @@ function seededRandom(seed) {
     return x - Math.floor(x);
 }
 
-// Generate store based on today's date
-function generateDailyStore() {
+// Generate store based on time block (every 10 seconds)
+function generateStore() {
     storePlayers = [];
 
-    const today = new Date();
-    const seed = parseInt(
-        today.getFullYear().toString() +
-        (today.getMonth() + 1).toString().padStart(2, "0") +
-        today.getDate().toString().padStart(2, "0")
-    );
+    const now = new Date();
+    const timeBlock = Math.floor(now.getTime() / 10000); // changes every 10 sec
+    const seed = timeBlock;
 
-    // Copy players array so we don't modify original
     const shuffledPlayers = [...players];
 
-    // Deterministic shuffle based on seed
+    // Shuffle based on seed
     for (let i = shuffledPlayers.length - 1; i > 0; i--) {
         const j = Math.floor(seededRandom(seed + i) * (i + 1));
-        [shuffledPlayers[i], shuffledPlayers[j]] = [shuffledPlayers[j], shuffledPlayers[i]];
+        [shuffledPlayers[i], shuffledPlayers[j]] =
+            [shuffledPlayers[j], shuffledPlayers[i]];
     }
 
-    // Take first 16 unique players
     storePlayers = shuffledPlayers.slice(0, 16);
 
     storeDate = seed;
@@ -147,16 +142,13 @@ function generateDailyStore() {
 }
 
 // Check if store needs refreshing
-function checkDailyStore() {
-    const today = new Date();
-    const todaySeed = parseInt(
-        today.getFullYear().toString() +
-        (today.getMonth() + 1).toString().padStart(2, "0") +
-        today.getDate().toString().padStart(2, "0")
-    );
+function checkStoreRefresh() {
+    const now = new Date();
+    const currentBlock = Math.floor(now.getTime() / 10000);
 
-    if (storeDate !== todaySeed) {
-        generateDailyStore();
+    if (storeDate !== currentBlock) {
+        generateStore();
+        displayStore();
     }
 }
 
@@ -170,6 +162,8 @@ function toggleStore() {
         storeDiv.style.display = "none";
     }
 }
+
+// Get price for card based on rarity
 function getCardPrice(player) {
     const rarity = cardRarity(player);
 
@@ -192,78 +186,71 @@ function getCardPrice(player) {
     }
 }
 
+// Display store
 function displayStore() {
     const storeDiv = document.getElementById("store");
     storeDiv.innerHTML = "";
+
     storePlayers.forEach((p, index) => {
+        const price = getCardPrice(p);
+
         const card = document.createElement("div");
         card.className = "card";
+
         card.innerHTML = `
-            <div class="rarity-label">${cardRarity(p)}</div>
-            <img class="player-photo" src="${p.img}" />
-            <img class="team-logo" src="${p.logo}" />
-            <div class="card-content">
-                <h3>${p.name}</h3>
-                <p>${p.team}</p>
-                <p>⭐ ${p.rating}</p>
-<p>Price: ${getCardPrice(p)} coins</p>                
-<button onclick="buyCard(${index})">Buy</button>
-            </div>
+            <img src="${p.img}" width="80"><br>
+            <b>${p.name}</b><br>
+            ${p.team}<br>
+            Rating: ${p.rating}<br>
+            Price: ${price} coins<br>
+            <button onclick="buyCard(${index})">Buy</button>
         `;
+
         storeDiv.appendChild(card);
     });
 }
-function bindTouch(btnId, keyName) {
-    const btn = document.getElementById(btnId);
 
-    btn.addEventListener("touchstart", e => {
-        e.preventDefault();
-        keys[keyName] = true;
-    });
-
-    btn.addEventListener("touchend", e => {
-        e.preventDefault();
-        keys[keyName] = false;
-    });
-
-    btn.addEventListener("touchcancel", e => {
-        e.preventDefault();
-        keys[keyName] = false;
-    });
-}
-
-bindTouch("btn-up", "ArrowUp");
-bindTouch("btn-down", "ArrowDown");
-bindTouch("btn-left", "ArrowLeft");
-bindTouch("btn-right", "ArrowRight");
-
-
+// Buy a card
 function buyCard(index) {
     const p = storePlayers[index];
+    const price = getCardPrice(p);
 
-   const price = getCardPrice(p);
+    if (coins >= price) {
+        coins -= price;
 
-if (coins >= price) {
-    coins -= price;
-        coins -= p.price;
+        p.price = price; // save sell value
         collection.push(p);
-
-        // 🔥 Remove card from shop
         storePlayers.splice(index, 1);
 
         alert(`Bought ${p.name}!`);
 
         updateCoins();
         displayCollection();
-        displayStore();   // Refresh store UI
+        displayStore();
         saveGame();
     } else {
         alert("Not enough coins!");
     }
 }
 
+// Timer for store refresh
+function updateStoreTimer() {
+    const now = new Date();
+    const nextBlock = Math.ceil(now.getTime() / 10000) * 10000;
+
+    let diff = Math.floor((nextBlock - now.getTime()) / 1000);
+
+    document.getElementById("store-timer").innerText =
+        "Next refresh in: " +
+        diff.toString().padStart(2, "0") + "s";
+}
+
+// Auto-refresh & countdown timer every 1 second
+setInterval(checkStoreRefresh, 1000);
+setInterval(updateStoreTimer, 1000);
+
 // Run daily store check on startup
-checkDailyStore();
+checkStoreRefresh();
 
 // === PACK OPENING ===
 
@@ -308,150 +295,15 @@ function openPack() {
     }, 5000);
 }
 
-// === PART 2: MINI-GAME ===
+// === MINI-GAME ===
 
 const canvas = document.getElementById("mini-game");
 const ctx = canvas.getContext("2d");
 let gameRunning = false;
 
-// Player and defender
 let playerObj = { x: 280, y: 250, width: 40, height: 40, speed: 5 };
 let defender = { x: Math.random() * 500, y: 50, width: 40, height: 40, speed: 2 };
 const endZoneY = 0;
 const keys = {};
 
-document.addEventListener('keydown', e => keys[e.key] = true);
-document.addEventListener('keyup', e => keys[e.key] = false);
-
-function startMiniGame() {
-    if (gameRunning) return;
-
-    document.getElementById("main-ui").classList.add("hidden");
-    document.getElementById("mobile-controls").classList.remove("hidden");
-
-    gameRunning = true;
-    playerObj.x = 280;
-    playerObj.y = 250;
-    defender.x = Math.random() * 500;
-    defender.y = 50;
-
-    requestAnimationFrame(gameLoop);
-}
-
-
-function draw3DRect(obj, color) {
-    const scale = 1 + (canvas.height - obj.y) / 1000;
-    const w = obj.width * scale;
-    const h = obj.height * scale;
-    const x = obj.x - (w - obj.width) / 2;
-    const y = obj.y - (h - obj.height) / 2;
-
-    ctx.shadowColor = 'rgba(0,0,0,0.5)';
-    ctx.shadowBlur = 10;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 5;
-
-    ctx.fillStyle = color;
-    ctx.fillRect(x, y, w, h);
-
-    ctx.shadowBlur = 0;
-}
-
-function gameLoop() {
-    if (!gameRunning) return;
-
-    const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    grad.addColorStop(0, "#0b3d91");
-    grad.addColorStop(1, "#004d00");
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = "#003366";
-    ctx.fillRect(0, 0, canvas.width, 40);
-
-    if (keys['ArrowLeft'] && playerObj.x > 0) playerObj.x -= playerObj.speed;
-    if (keys['ArrowRight'] && playerObj.x + playerObj.width < canvas.width) playerObj.x += playerObj.speed;
-    if (keys['ArrowUp'] && playerObj.y > 0) playerObj.y -= playerObj.speed;
-    if (keys['ArrowDown'] && playerObj.y + playerObj.height < canvas.height) playerObj.y += playerObj.speed;
-
-    draw3DRect(playerObj, "yellow");
-
-    defender.y += defender.speed;
-    if (defender.y > canvas.height) defender.y = -50;
-    defender.x += (defender.x + 20 < playerObj.x + playerObj.width / 2 ? 1 : -1);
-
-    draw3DRect(defender, "red");
-
-    if (playerObj.x < defender.x + defender.width &&
-        playerObj.x + playerObj.width > defender.x &&
-        playerObj.y < defender.y + defender.height &&
-        playerObj.y + playerObj.height > defender.y) {
-        endMiniGame(false);
-        return;
-    }
-
-    if (playerObj.y <= endZoneY + 40) {
-        endMiniGame(true);
-        return;
-    }
-
-    requestAnimationFrame(gameLoop);
-}
-function returnToMenu() {
-    document.getElementById("main-ui").classList.remove("hidden");
-    document.getElementById("mobile-controls").classList.add("hidden");
-    document.getElementById("return-btn").classList.add("hidden");
-
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-}
-
-function endMiniGame(won) {
-    gameRunning = false;
-
-    if (won) {
-        coins += 200;
-        alert("Touchdown! +200 coins");
-    } else {
-        alert("Tackle! Try again.");
-    }
-
-    updateCoins();
-    saveGame();
-
-    // 🔥 Show return button
-    document.getElementById("return-btn").classList.remove("hidden");
-}
-function updateStoreTimer() {
-    const now = new Date();
-
-    // Next midnight
-    const nextMidnight = new Date(
-        now.getFullYear(),
-        now.getMonth(),
-        now.getDate() + 1,
-        0, 0, 0, 0
-    );
-
-    let diff = Math.floor((nextMidnight - now) / 1000); // seconds left
-
-    const hours = Math.floor(diff / 3600);
-    diff %= 3600;
-
-    const minutes = Math.floor(diff / 60);
-    const seconds = diff % 60;
-
-    const formatted =
-        hours.toString().padStart(2, "0") + ":" +
-        minutes.toString().padStart(2, "0") + ":" +
-        seconds.toString().padStart(2, "0");
-
-    document.getElementById("store-timer").innerText =
-        "Next refresh in: " + formatted;
-}
-
-
-// Auto-save every 10 seconds
-setInterval(saveGame, 10000);
-setInterval(updateStoreTimer, 1000);
-updateStoreTimer();
+document.addEventListener('keydown', e => keys[e.key] =
